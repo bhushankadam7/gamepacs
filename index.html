@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Player Games | GamePacs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f5f6fa;
+            --text-color: #2d3436;
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --footer-bg: linear-gradient(135deg, #2d3436 0%, #6b2e2e 100%);
+            --game-gradient: linear-gradient(135deg, #ff6b6b, #ff4754);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d3436;
+            --header-bg: #2d3436;
+            --footer-bg: linear-gradient(135deg, #121212 0%, #4a1a1a 100%);
+            --game-gradient: linear-gradient(135deg, #4a1a1a, #2d3436);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background: var(--header-bg) !important;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ff4754;
+            letter-spacing: -1px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-items a {
+            text-decoration: none;
+            margin-left: 20px;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+        }
+
+        .nav-items a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ff4754;
+            transition: width 0.3s ease;
+        }
+
+        .nav-items a:hover::after {
+            width: 100%;
+        }
+         /* ======== NEW DROPDOWN STYLES ======== */
+         .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--card-bg);
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border-radius: 8px;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 0.8rem 1rem;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(255,71,84,0.1);
+        }
+
+        /* Mobile Dropdown Fixes */
+        @media (max-width: 768px) {
+            .dropdown {
+                width: 100%;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                background: transparent;
+                display: none;
+            }
+
+            .dropdown.active .dropdown-content {
+                display: block;
+            }}
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(20deg);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            animation: cardEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+            transform-origin: bottom;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            transform: translateY(-10px) rotate(-1deg);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .game-image {
+        height: 150px;
+        position: relative;
+        overflow: hidden;
+       }
+
+       .game-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+       }
+
+      .game-card:hover .game-image img {
+       transform: scale(1.1);
+       }
+
+      .game-content {
+       padding: 1.5rem;
+        
+       }
+
+      .game-title {
+       margin-bottom: 0.60rem;
+       color: var(--text-color);
+       font-size: 1.1rem;
+       font-weight: 700;
+        }
+
+        .game-title:hover{
+            color: rgb(231, 88, 88);
+        }
+
+        .game-category {
+            color: #636e72;
+            font-size: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .play-button {
+            display: block;
+            width: 100%;
+            padding: 0.4rem;
+            background: #ff4754;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s ease-in-out infinite;
+            
+        }
+
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s;
+        }
+
+        .play-button:hover::before {
+            left: 100%;
+        }
+           /* Bounce effect on click */
+    @keyframes clickBounce {
+        0% { transform: scale(1); }
+        50% { transform: scale(0.95); }
+        100% { transform: scale(1); }
+    }
+
+    .game-card:active {
+        animation: clickBounce 0.3s ease;
+    }
+
+    /* Floating animation for header */
+    @keyframes floatHeader {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
+    }
+
+    header {
+        animation: floatHeader 3s ease-in-out infinite;
+    }
+
+    /* Neon border animation */
+    @keyframes neonPulse {
+        0% { box-shadow: 0 0 5px #ff4754; }
+        50% { box-shadow: 0 0 20px #ff4754; }
+        100% { box-shadow: 0 0 5px #ff4754; }
+    }
+
+    .logo {
+        animation: neonPulse 2s ease-in-out infinite;
+        padding: 0 10px;
+        border-radius: 8px;
+    }
+
+    /* Rotating theme toggle */
+    .theme-toggle:hover {
+        animation: spin 0.8s ease;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+     /* Add these new keyframe animations */
+     @keyframes cardEntrance {
+        from {
+            opacity: 0;
+            transform: translateY(50px) rotate(5deg);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) rotate(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes ripple {
+        from {
+            transform: scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: scale(20);
+            opacity: 0;
+        }
+    }
+
+        footer {
+            background: var(--footer-bg);
+            color: #ffffff;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--footer-bg);
+           background-size: 200% 200%;
+           animation: gradientShift 12s ease infinite;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-section h2 {
+            margin-bottom: 1.5rem;
+            color: #ff4754;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-icons a {
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .fa-instagram { color: #E1306C; }
+        .fa-whatsapp { color: #25D366; }
+        .fa-linkedin { color: #0077B5; }
+        .fa-facebook { color: #1877F2; }
+        .fa-github { color: #ffffff; }
+
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            opacity: 0.8;
+        }
+
+        .footer-links a {
+            color: #ffffff !important;
+            text-decoration: none;
+            margin: 0 1.2rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-heading {
+            text-align: center;
+            color: #e1f87c;
+            margin-top: 2rem;
+        }
+
+        /* Login Modal Styles */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .login-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 400px;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .login-form input {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .login-form button {
+            background: #ff4754;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-items {
+                position: fixed;
+                right: -100%;
+                top: 70px;
+                display: flex;
+                flex-direction: column;
+                background: var(--header-bg);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 2rem 0;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-items.active {
+                right: 0;
+            }
+
+            .nav-items a {
+                margin: 1rem 0;
+                color: var(--text-color);
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-content">
+            <span class="close-btn" onclick="closeLogin()">&times;</span>
+            <h2>Login to GamePacs</h2>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo"><i class="fa-duotone fa-solid fa-gamepad"></i> GamePacs</div>
+        <nav class="nav-links">
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="hamburger">☰</div>
+            <div class="nav-items">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="#" onclick="showLogin()"><i class="fas fa-user"></i> Login</a>
+                <div class="dropdown">
+                    <a href="#" class="dropbtn"><i class="fas fa-th-large"></i> Categories <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content" id="categoryDropdown">
+                        <!-- Dynamically populated categories -->
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="games-grid">
+            <!-- Game Card 1 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INXrhB.md.jpg" alt="Draw The Leafs Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Draw The Leafs</h3>
+                    <p class="game-category">Strategy • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/challenge_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 2 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3TB6Ghx.png" alt="Snake Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Snake Game</h3>
+                    <p class="game-category">Finger Control • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/snake_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 3 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INFCp1.md.jpg" alt="Archery Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Archery Game</h3>
+                    <p class="game-category">Arcade • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/archery_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 4 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INF2Bj.md.jpg" alt="Word Shuffle Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Word Shuffle Game</h3>
+                    <p class="game-category">Brain Game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/word_shuffle_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 5 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3TB1GWl.png" alt="Tic Tac Toe">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Bulb Connection</h3>
+                    <p class="game-category">Brain Game • Single player</p>
+                    <a href="https://bhushankadam7.github.io/bulb_connection/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 6 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INFFrQ.md.jpg" alt="Hangman Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Hangman</h3>
+                    <p class="game-category">Mind Game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/hangman/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 7 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3TB1Ex4.png" alt="Neon Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Connect Bubble</h3>
+                    <p class="game-category">Strategy • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/connect_bubble/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 8 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INFf2V.md.jpg" alt="Rock Paper Scissors">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Rock Paper Scissors</h3>
+                    <p class="game-category">Luck • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/rock_scissor_paper/" class="play-button">Play Now</a>
+                </div>
+            </div>
+             <!-- Game Card 9 -->
+             <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INF3Ex.md.jpg" alt="Tic Tac Toe">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Tic Tac Toe</h3>
+                    <p class="game-category">Brain Game • Single & Two Player</p>
+                    <a href="https://bhushankadam7.github.io/tic_tac_toe/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 10 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3TBUooN.png" alt="Snake Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Color Match</h3>
+                    <p class="game-category">Mind Game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/color_match/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 11 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3INXPB1.md.jpg" alt="Neon Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Neon Game</h3>
+                    <p class="game-category">Strategy • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/neon_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 12 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upXwqF.th.jpg" alt="throw ball">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Tetris Game</h3>
+                    <p class="game-category">mind control • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/tetris" class="play-button">Play Now</a>
+                </div>
+            </div>
+             
+            <!-- Game Card 1 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upUOR1.th.jpg" alt="Draw The Leafs Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Color Switch Game</h3>
+                    <p class="game-category">Strategy • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/color_switch/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 2 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3uphjTl.th.jpg" alt="Snake Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Sea Diving Game</h3>
+                    <p class="game-category">Defence game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/sea_diving/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 3 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upXWzB.th.jpg" alt="Archery Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Tank Game</h3>
+                    <p class="game-category">Arcade • Single & two Player</p>
+                    <a href="https://bhushankadam7.github.io/tank_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 4 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upUNHP.th.jpg" alt="Word Shuffle Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Casino Game</h3>
+                    <p class="game-category">Brain Game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/casino/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 5 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upXv5v.th.jpg" alt="Tic Tac Toe">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Color match</h3>
+                    <p class="game-category">Brain Game • Single player</p>
+                    <a href="https://bhushankadam7.github.io/color/" class="play-button">Play Now</a>
+                </div>
+            </div>
+    
+            <!-- Game Card 6 -->
+            <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upUeOF.th.jpg" alt="Hangman Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Squid Game</h3>
+                    <p class="game-category">Strategy game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/squid_game/" class="play-button">Play Now</a>
+                </div>
+            </div>
+
+             <!-- Game Card 6 -->
+             <div class="game-card">
+                <div class="game-image">
+                    <img src="https://iili.io/3upXSbp.th.jp" alt="Hangman Game">
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Galexy Defence</h3>
+                    <p class="game-category">Defence Game • Single Player</p>
+                    <a href="https://bhushankadam7.github.io/meteros/" class="play-button">Play Now</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-columns">
+                <div class="contact-section">
+                    <h2>Contact Us</h2>
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/bhushan_kadam_7?igsh=MWR1dTNsNHFwMWpxMg=="><i class="fab fa-instagram"></i></a>
+                        <a href="http://api.whatsapp.com/send?phone=+919623680688&text=welcome%20to%20my%20whatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.linkedin.com/in/bhushan-kadam-2a0721259?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.facebook.com/bhushan.kadam.771282?mibextid=rS40aB7S9Ucbxw6v"><i class="fab fa-facebook"></i></a>
+                        <a href="https://github.com/bhushankadam7"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="https://bhushankadam7.github.io/about_page/"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="https://bhushankadam7.github.io/privacy/"><i class="fas fa-lock"></i> Privacy</a>
+                    <a href="https://bhushankadam7.github.io/terms_page/"><i class="fas fa-file-contract"></i> Terms</a>
+                </div>
+            </div>
+            <h3 class="footer-heading">© 2025 GamePacs. Made By Bhushan Kadam.</h3>
+        </div>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+    
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            body.setAttribute('data-theme', currentTheme);
+            themeToggle.innerHTML = currentTheme === 'dark' 
+                ? '<i class="fas fa-sun"></i>' 
+                : '<i class="fas fa-moon"></i>';
+        }
+    
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? '' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            themeToggle.innerHTML = isDark 
+                ? '<i class="fas fa-moon"></i>' 
+                : '<i class="fas fa-sun"></i>';
+        });
+    
+        // Category Dropdown Functions
+        function extractCategories() {
+            const categoryElements = document.querySelectorAll('.game-category');
+            const categories = new Set();
+            
+            categoryElements.forEach(el => {
+                const gameCategories = el.textContent.split('•').map(c => c.trim());
+                gameCategories.forEach(c => categories.add(c));
+            });
+    
+            return Array.from(categories);
+        }
+    
+        function populateCategoryDropdown() {
+            const dropdown = document.getElementById('categoryDropdown');
+            const categories = extractCategories();
+            
+            dropdown.innerHTML = '';
+            
+            const allItem = document.createElement('a');
+            allItem.href = '#';
+            allItem.innerHTML = 'All Games';
+            allItem.onclick = () => {
+                filterGames('All');
+                closeDropdowns();
+            };
+            dropdown.appendChild(allItem);
+    
+            categories.forEach(category => {
+                const item = document.createElement('a');
+                item.href = '#';
+                item.innerHTML = category;
+                item.onclick = () => {
+                    filterGames(category);
+                    closeDropdowns();
+                };
+                dropdown.appendChild(item);
+            });
+        }
+    
+        // Dropdown Click Handlers
+        document.querySelector('.dropbtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dropdown = this.closest('.dropdown');
+            dropdown.classList.toggle('active');
+        });
+    
+        // Close dropdowns when clicking outside
+        function closeDropdowns() {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.classList.remove('active');
+            });
+        }
+    
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                closeDropdowns();
+            }
+        });
+    
+        // Filter Games Function
+        function filterGames(category) {
+            const gameCards = document.querySelectorAll('.game-card');
+            
+            gameCards.forEach(card => {
+                const gameCategory = card.querySelector('.game-category').textContent;
+                const shouldShow = category === 'All' || gameCategory.includes(category);
+                card.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+    
+        // Hamburger Menu
+        const hamburger = document.querySelector('.hamburger');
+        const navItems = document.querySelector('.nav-items');
+    
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navItems.classList.toggle('active');
+        });
+    
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-items') && !e.target.matches('.hamburger')) {
+                navItems.classList.remove('active');
+            }
+        });
+    
+        // Game Card Interactions
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+                card.style.boxShadow = '0 8px 25px rgba(0,0,0,0.12)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+            });
+        });
+    
+        // Login Functions
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+    
+        function closeLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+    
+        function handleLogin(e) {
+            e.preventDefault();
+            alert('Login successful!');
+            closeLogin();
+        }
+    
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            populateCategoryDropdown();
+        });
+    
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                closeLogin();
+            }
+        }
+        // Dynamic animation delays for cards
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.game-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+
+    // Ripple effect for buttons
+    document.querySelectorAll('.play-button').forEach(button => {
+        button.addEventListener('click', function(e) {
+            let ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.background = 'rgba(255,255,255,0.4)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'ripple 0.6s linear';
+            
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    </script>
+</body>
+</html>
